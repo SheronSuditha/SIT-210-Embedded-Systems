@@ -1,48 +1,25 @@
+import serial
 import RPi.GPIO as GPIO
-import time
 from time import sleep
-GPIO.setwarnings(False)
 
 
-def ping():
-    """Get reading from HC-SR04"""
-    GPIO.setmode(GPIO.BCM) 
-    TRIG = 23 
-    ECHO = 18
-    ledpin = 25    
-         
-    GPIO.setup(TRIG,GPIO.OUT)
-    GPIO.setup(ECHO,GPIO.IN)
-    GPIO.setup(ledpin,GPIO.OUT)
-    pi_pwm = GPIO.PWM(ledpin,100)
-    pi_pwm.start(0)
-    
-    GPIO.output(TRIG, False)
-    time.sleep(1)
-         
-    GPIO.output(TRIG, True)
-    time.sleep(0.00001)
-    GPIO.output(TRIG, False)
-     
-    while GPIO.input(ECHO)==0:
-      pulse_start = time.time()
-     
-    while GPIO.input(ECHO)==1:
-      pulse_end = time.time()
-     
-    pulse_duration = pulse_end - pulse_start
-     
-    distance = pulse_duration * 17150
-     
-    distance = round(distance, 2)
-     
-    print("Distance:",distance,"cm")
-    print("test", round((distance*100)/1204, 0))
-    pi_pwm.ChangeDutyCycle(int(round((distance*100)/1204, 0)))
-    time.sleep(0.5) 
-    GPIO.cleanup()
+led_pin = 21            
+GPIO.setmode(GPIO.BCM)          
+GPIO.setup(led_pin, GPIO.OUT)   
+pwm = GPIO.PWM(led_pin, 100)   
+pwm.start(0)                  
 
-print("Reading Distance \n")
 
+ser = serial.Serial('/dev/ttyACM0',9600)
+s = [0]
 while True:
-        ping()
+	read_serial=ser.readline()
+	string_serial = read_serial.decode('utf-8').split(' ')
+	#s[0] = str(int (ser.readline(),16))
+	#print(s[0])
+	#print("test", int(string_serial[1]) if int(string_serial[1]) < 100 else int(string_serial[1]))
+	print("rounded",int(string_serial[1]) if int(string_serial[1]) < 100 else 80)
+	#pwm.ChangeDutyCycle(int(round((int(string_serial[1])*100)/1082, 0)))
+	pwm.ChangeDutyCycle(int(string_serial[1]) if int(string_serial[1]) < 100 else 80)
+	
+	print(string_serial[1])
