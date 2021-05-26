@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const User = require('../../models/Users');
-const validate = require('../../utils/validation');
+const validate = require('../../utils/validation/validate');
 const jwt = require('jsonwebtoken')
 
 //post ~ create a user account 
@@ -65,3 +65,5 @@ router.post('/login', async (req, res) => {
         id: user._id
     })
 })
+
+module.exports = router;

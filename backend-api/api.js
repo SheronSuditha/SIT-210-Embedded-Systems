@@ -25,7 +25,12 @@ mongoose.connect(process.env.DB_URL, {
 }).then(() => console.log("[SERVER] DB connected."))
     .catch(error => console.log(error));
 
-app.use('/api/connect')
+
+const connectRoute = require('./routes/connect/connect')
+
+
+
+app.use('/api/connect', connectRoute)
 
 app.get('/', async (req, res) => {
     res.json({
