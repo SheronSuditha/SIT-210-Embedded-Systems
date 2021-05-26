@@ -23,7 +23,7 @@ router.post('/register', async (req, res) => {
         name: req.body.name,
         email: req.body.email,
         pass: req.body.pass,
-        permLevel: accesslvl
+        permLevel: req.body.perm
     })
 
     try {
