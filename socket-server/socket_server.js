@@ -1,12 +1,16 @@
-const e = require('express');
 const express = require('express');
 const fs = require('fs');
 const app = express();
 const http = require('http');
 const PORT = 3005;
-const {
-    Server
-} = require("socket.io");
+const server = http.createServer(app);
+const { Server } = require("socket.io");
+
+/*
+INFO: Socket server will act as the main reply and the entry point for sensors. 
+    Sensors -> Socket Server -> Express Server -> (Mongodb) -> FrontEnd
+        Front end will also be replayed to the Socketserver, IF view live feed is ticked. 
+*/
 
 const io = new Server(server, {
     cors: {
@@ -17,6 +21,7 @@ const io = new Server(server, {
 
 var sensors = new Array();
 var clients = new Array();
+var mainApiEndpoint;
 
 io.on('connection', (socket) => {
     console.log(`New Socket with id: ${socket.id}`)
@@ -30,7 +35,13 @@ io.on('connection', (socket) => {
         logToConsole(`New connection: ${socket.id}#client`);
     })
 
+    socket.on('server:init', (data) => {
+        mainApiEndpoint = socket;
+        logToConsole(`New connection: ${socket.id}#server`);
+    })
+
     socket.on('disconnect', () => {
+        console.log(`Socket Disconnected: ${socket.id}`)
         if (sensors.find(socket) === undefined)
             return;
         else
@@ -53,14 +64,15 @@ function logToConsole(message) {
 app.get('/', (req, res) => {
     res.json({
         state: true,
-        message: "Server is UP"
+        message: "Relay server is online"
     })
 });
 
 app.get('/connection-stats', async (req, res) => {
     res.json({
         clients,
-        sensors
+        sensors,
+        server
     })
 })
 
