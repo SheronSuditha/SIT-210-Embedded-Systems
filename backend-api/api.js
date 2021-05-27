@@ -4,7 +4,7 @@ const dotenv = require('dotenv')
 const mongoose = require('mongoose');
 const app = express();
 const { io } = require('socket.io-client');
-const socket = io('localhost:3005')
+const socket = io('http://localhost:3005/')
 
 dotenv.config();
 app.use(cors());
@@ -21,11 +21,11 @@ app.use(async (req, res, next) => {
     }
 });
 
-mongoose.connect(process.env.DB_URL, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true
-}).then(() => console.log("[SERVER] DB connected."))
-    .catch(error => console.log(error));
+// mongoose.connect(process.env.DB_URL, {
+//     useNewUrlParser: true,
+//     useUnifiedTopology: true
+// }).then(() => console.log("[SERVER] DB connected."))
+//     .catch(error => console.log(error));
 
 
 const connectRoute = require('./routes/connect/connect')
@@ -44,8 +44,11 @@ app.listen(process.env.PORT, () => {
     console.log(`[SERVER] Server started on: ${process.env.PORT}`);
 })
 
+socket.emit("server:init")
 
-socket.emit("client:init")
+socket.on('reconnect', () => {
+    socket.emit("server:init")
+})
 
 
 
