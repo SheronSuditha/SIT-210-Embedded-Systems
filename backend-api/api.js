@@ -3,6 +3,8 @@ const cors = require('cors');
 const dotenv = require('dotenv')
 const mongoose = require('mongoose');
 const app = express();
+const { io } = require('socket.io-client');
+const socket = io('localhost:3005')
 
 dotenv.config();
 app.use(cors());
@@ -41,3 +43,10 @@ app.get('/', async (req, res) => {
 app.listen(process.env.PORT, () => {
     console.log(`[SERVER] Server started on: ${process.env.PORT}`);
 })
+
+
+socket.emit("client:init")
+
+
+
+
