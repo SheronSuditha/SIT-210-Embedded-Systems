@@ -6,19 +6,19 @@ import { LightningBoltIcon } from '@heroicons/react/outline'
 
 import { TileLayer, Marker, Popup, useMapEvent, MapContainer } from 'react-leaflet'
 import { useEffect, useRef } from 'react';
-import L from 'leaflet'
+import L, { Icon } from 'leaflet'
+import boltSvg from './components/icons/sensor.png'
+import "leaflet/dist/leaflet.css";
 
-const iconPerson = new L.Icon({
-	iconUrl: require('../src/components/icons/bolt.svg'),
-	iconAnchor: null,
-	popupAnchor: null,
-	shadowUrl: null,
-	shadowSize: null,
-	shadowAnchor: null,
-	iconSize: new L.Point(60, 75),
+import icon from 'leaflet/dist/images/marker-icon.png';
+import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 
+let DefaultIcon = L.icon({
+    iconUrl: boltSvg,
+	iconSize: [15,15]
 });
 
+L.Marker.prototype.options.icon = DefaultIcon;
 
 function App() {
 	return (
@@ -31,14 +31,19 @@ function App() {
 			>
 				<TileLayer
 					attribution='&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-					url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+					url={process.env.MAPBOX}
 				/>
-				<Marker key={1} position={[7.0804165, 79.8680488]} icon={iconPerson}>
+				
+				<Marker key={1} position={[13.0804165, 75.8680488]}>
 					<Popup>
-						<span>A pretty CSS3 popup. <br /> Easily customizable.</span>
+						<span>Sensor location 1</span>
 					</Popup>
 				</Marker>
-
+				<Marker key={1} position={[17.0804165, 75.8680488]}>
+					<Popup>
+						<span>Sensor location 1</span>
+					</Popup>
+				</Marker>
 			</MapContainer>
 		</div>
 	)
