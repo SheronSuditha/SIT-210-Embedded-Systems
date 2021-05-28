@@ -31,10 +31,10 @@ function UserMap() {
 	return (
 		<div>
 			<MapContainer
-				center={[ 7.0801926, 79.8669923 ]}
-				zoom="13"
+				center={[ -37.8153381, 144.9615947 ]}
+				zoom="20"
 				scrollWheelZoom={false}
-				style={{ height: '100vh' }}
+				style={{ minHeight: '80vh' }}
 			>
 				<TileLayer
 					attribution="&copy; <a href=&quot;http://osm.org/copyright&quot;>OpenStreetMap</a> contributors"
@@ -49,7 +49,8 @@ function UserMap() {
 				{groundSensors.map((gSensor) => (
 					<Marker key={gSensor._id} position={[ gSensor.lat, gSensor.lon ]}>
 						<Popup>
-							<span>Sensor location 1</span>
+							<span>Bay ID: {gSensor.bay_id}</span> <br />
+							<span>Status: {gSensor.status}</span>
 						</Popup>
 					</Marker>
 				))}
