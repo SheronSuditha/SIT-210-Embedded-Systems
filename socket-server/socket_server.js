@@ -1,3 +1,4 @@
+const { randomInt } = require('crypto');
 const express = require('express');
 const app = express();
 const http = require('http');
@@ -27,6 +28,8 @@ io.on('connection', (socket) => {
 
     socket.on('client:init', (data) => {
         clients.push(socket);
+        socket.emit('client:ack')
+        socket.join('client');
         logToConsole(`New connection: ${socket.id}#client`);
     })
 
@@ -52,7 +55,7 @@ io.on('connection', (socket) => {
             clients.forEach((element, index, obj) => {
                 let id = element.id;
                 if (id === soc_id) {
-                    mainApiEndpoint.splice(index, 1);
+                    clients.splice(index, 1);
                 } else {
                 }
             });
@@ -75,6 +78,13 @@ function logToConsole(message) {
     console.log("[SOCKET SERVER] " + message);
 }
 
+setInterval(() => {
+    broadCastToClients();
+
+}, 2000);
+function broadCastToClients() {
+    io.to('client').emit('client:data:relay', { id: Math.floor(Math.random() * 100), state: `false ${Math.floor(Math.random() * 100)}` })
+}
 
 app.get('/', (req, res) => {
     res.json({
@@ -85,8 +95,8 @@ app.get('/', (req, res) => {
 
 app.get('/connection-stats', async (req, res) => {
     res.json({
-        clients,
-        sensors,
+        clients: clients.map(c => c.id),
+        sensors: sensors.map(b => b.id),
         server: mainApiEndpoint.map(a => a.id)
     })
 })
