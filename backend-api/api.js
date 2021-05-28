@@ -21,18 +21,19 @@ app.use(async (req, res, next) => {
     }
 });
 
-// mongoose.connect(process.env.DB_URL, {
-//     useNewUrlParser: true,
-//     useUnifiedTopology: true
-// }).then(() => console.log("[SERVER] DB connected."))
-//     .catch(error => console.log(error));
+mongoose.connect(process.env.DB_URL, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true
+}).then(() => console.log("[SERVER] DB connected."))
+    .catch(error => console.log(error));
 
 
 const connectRoute = require('./routes/connect/connect')
-
+const publicRoute_sensorData = require('./routes/public/sensors');
 
 
 app.use('/api/connect', connectRoute)
+app.use('/api/public', publicRoute_sensorData);
 
 app.get('/', async (req, res) => {
     res.json({
