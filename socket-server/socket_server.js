@@ -53,6 +53,10 @@ io.on('connection', (socket) => {
         logToConsole(`New connection: ${socket.id}#server`);
     })
 
+    socket.on('sensor:res:data', ({ sensor_id, data_result }) => {
+        io.to('client').emit('client:data:relay', { id: sensor_id, ultrasonic_state: data_result.ultrasonic_values, photosensor_state: data_result.photosensor_values })
+    })
+
     socket.on('disconnect', () => {
         console.log(`Socket Disconnected: ${socket.id}`)
         let soc_id = socket.id;
@@ -94,12 +98,13 @@ function logToConsole(message) {
 }
 
 setInterval(() => {
-    broadCastToClients();
-
+    reqDataFromGroundSensors();
 }, 2000);
-function broadCastToClients() {
-    io.to('client').emit('client:data:relay', { id: Math.floor(Math.random() * 100), state: `false ${Math.floor(Math.random() * 100)}` })
+
+function reqDataFromGroundSensors() {
+    io.to('sensor').emit('sensor:req:data');
 }
+
 
 app.get('/', (req, res) => {
     res.json({
