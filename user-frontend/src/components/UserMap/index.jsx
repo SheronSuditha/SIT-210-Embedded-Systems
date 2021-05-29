@@ -3,6 +3,8 @@ import { TileLayer, Marker, Popup, useMapEvent, MapContainer } from 'react-leafl
 import { useEffect, useRef, useState } from 'react';
 import L, { Icon } from 'leaflet';
 import boltSvg from '../../components/icons/sensor.png';
+import redico from '../../components/icons/red.png';
+import greenico from '../../components/icons/green.png';
 import 'leaflet/dist/leaflet.css';
 
 import icon from 'leaflet/dist/images/marker-icon.png';
@@ -11,6 +13,16 @@ import { getGroundSensors } from '../../utils/api/worker';
 
 let DefaultIcon = L.icon({
 	iconUrl: boltSvg,
+	iconSize: [ 15, 15 ]
+});
+
+let RedIcon = L.icon({
+	iconUrl: redico,
+	iconSize: [ 15, 15 ]
+});
+
+let GreenIcon = L.icon({
+	iconUrl: greenico,
 	iconSize: [ 15, 15 ]
 });
 
@@ -46,14 +58,24 @@ function UserMap() {
 						<span>Sensor location 1</span>
 					</Popup>
 				</Marker>
-				{groundSensors.map((gSensor) => (
-					<Marker key={gSensor._id} position={[ gSensor.lat, gSensor.lon ]}>
-						<Popup>
-							<span>Bay ID: {gSensor.bay_id}</span> <br />
-							<span>Status: {gSensor.status}</span>
-						</Popup>
-					</Marker>
-				))}
+				{groundSensors.map(
+					(gSensor) =>
+						gSensor.status === 'Occupied' ? (
+							<Marker key={gSensor._id} position={[ gSensor.lat, gSensor.lon ]} icon={RedIcon}>
+								<Popup>
+									<span>Bay ID: {gSensor.bay_id}</span> <br />
+									<span>Status: {gSensor.status}</span>
+								</Popup>
+							</Marker>
+						) : (
+							<Marker key={gSensor._id} position={[ gSensor.lat, gSensor.lon ]} icon={GreenIcon}>
+								<Popup>
+									<span>Bay ID: {gSensor.bay_id}</span> <br />
+									<span>Status: {gSensor.status}</span>
+								</Popup>
+							</Marker>
+						)
+				)}
 			</MapContainer>
 		</div>
 	);
