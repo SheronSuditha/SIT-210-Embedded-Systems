@@ -122,5 +122,5 @@ app.get('/connection-stats', async (req, res) => {
 })
 
 server.listen(process.env.BRANCH === "prod" ? process.env.PORT : process.env.DEV_PORT, () => {
-    console.log(`Current Branch: ${process.env.BRANCH}\nlistening on :${process.env.DEV_PORT}`);
+    console.log(`Current Branch: ${process.env.BRANCH}\nlistening on :${process.env.BRANCH === "dev" ? process.env.DEV_PORT : process.env.PORT}`);
 });
