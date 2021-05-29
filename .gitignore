@@ -1,2 +1,7 @@
 node_modules
 .env
+shelf/
+workspace.xml
+.idea
+__pycache__/
+venv
