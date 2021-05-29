@@ -5,7 +5,7 @@ dotenv.config();
 const mongoose = require('mongoose');
 const app = express();
 const { io } = require('socket.io-client');
-const socket = io(`${process.env.SOCKET_URI}`)
+var socket = io(`${process.env.SOCKET_URI}`)
 
 app.use(cors());
 app.use(express.json());
@@ -46,6 +46,10 @@ app.listen(process.env.PORT, () => {
 })
 
 socket.emit("server:init")
+socket.on('disconnect', () => {
+    socket = io(`${process.env.SOCKET_URI}`);
+    socket.emit("server:init")
+})
 
 socket.on('reconnect', () => {
     socket.emit("server:init")
