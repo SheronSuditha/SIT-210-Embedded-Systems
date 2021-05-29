@@ -33,7 +33,6 @@ function DashboardPage() {
 
 	const handleSocketFunctions = () => {
 		socket.on('client:data:relay', (data) => {
-			console.log('GOT');
 			const { id, state } = data;
 			addToState(id, state);
 		});
