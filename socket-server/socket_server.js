@@ -1,9 +1,22 @@
-const { randomInt } = require('crypto');
+const dotenv = require('dotenv');
+dotenv.config();
+var fs = require('fs')
 const express = require('express');
 const app = express();
-const http = require('http');
-const server = http.createServer(app);
+var http;
+var server;
+if (process.env.BRANCH === "prod") {
+    http = require('https');
+    server = http.createServer({
+        key: fs.readFileSync(process.env.KEY),
+        cert: fs.readFileSync(process.env.CERT)
+    }, app);
+} else if (process.env.BRANCH === "dev") {
+    http = require('https');
+    server = http.createServer(app);
+}
 const { Server } = require("socket.io");
+
 /*
 INFO: Socket server will act as the main reply and the entry point for sensors. 
     Sensors -> Socket Server -> Express Server -> (Mongodb) -> FrontEnd
@@ -22,6 +35,8 @@ let mainApiEndpoint = new Array();
 io.on('connection', (socket) => {
     console.log(`New Socket with id: ${socket.id}`)
     socket.on('sensor:init', (data) => {
+        socket.emit('sensor:ack')
+        socket.join('sensor');
         sensors.push(socket);
         logToConsole(`New connection: ${socket.id}#sensor`);
     })
@@ -101,6 +116,6 @@ app.get('/connection-stats', async (req, res) => {
     })
 })
 
-server.listen(3005, () => {
-    console.log(`listening on :${3005}`);
+server.listen(process.env.BRANCH === "prod" ? process.env.PORT : process.env.DEV_PORT, () => {
+    console.log(`Current Branch: ${process.env.BRANCH}\nlistening on :${process.env.DEV_PORT}`);
 });
