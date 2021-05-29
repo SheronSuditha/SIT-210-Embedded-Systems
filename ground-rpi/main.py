@@ -71,7 +71,7 @@ def send_sensor_data():
         parsed_serial = data_from_serial.decode('utf-8').split(" ")
         print(parsed_serial)
         ultrasonic_values = parsed_serial[2]
-        photosensor_values = parsed_serial[4]
+        photosensor_values = parsed_serial[4].strip()
         data_result = handle_data_process(ultrasonic_values, photosensor_values)
         sensor_id = sensor_id_
         print(data_result)
