@@ -1,12 +1,12 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv')
+dotenv.config();
 const mongoose = require('mongoose');
 const app = express();
 const { io } = require('socket.io-client');
-const socket = io('http://localhost:3005/')
+const socket = io(`${process.env.SOCKET_URI}`)
 
-dotenv.config();
 app.use(cors());
 app.use(express.json());
 
