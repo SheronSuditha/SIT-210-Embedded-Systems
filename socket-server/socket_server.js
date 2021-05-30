@@ -54,7 +54,7 @@ io.on('connection', (socket) => {
     })
 
     socket.on('sensor:res:data', ({ sensor_id, data_result }) => {
-        io.to('client').emit('client:data:relay', { id: sensor_id, ultrasonic_state: data_result.ultrasonic_values, photosensor_state: data_result.photosensor_values })
+        io.to('client').emit('client:data:relay', { id: sensor_id, ultrasonic_state: data_result.ultrasonic, photosensor_state: data_result.photosensor })
     })
 
     socket.on('disconnect', () => {
