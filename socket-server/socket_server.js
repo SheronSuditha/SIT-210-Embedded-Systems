@@ -50,6 +50,8 @@ io.on('connection', (socket) => {
 
     socket.on('server:init', (data) => {
         mainApiEndpoint.push(socket)
+        socket.emit('server:ack')
+        socket.join('server')
         logToConsole(`New connection: ${socket.id}#server`);
     })
 
