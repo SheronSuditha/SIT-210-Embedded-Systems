@@ -1,21 +1,18 @@
 const initalState = {
     isEnabled: false,
     socketId: null,
+    socketData: null
 }
 
-const dataRelayInitialState = [{
-    sensorId: null,
-    photosensor: null,
-    ultrasonic: null,
-    time: null
-}]
+const dataRelayInitialState = []
 
 export function handleRealtimeSocket(state = initalState, { type, payload }) {
     switch (type) {
         case 'INIT_RT_SOCKET':
             return state = {
                 isEnabled: payload.isEnabled,
-                socketId: payload.socketId
+                socketId: payload.socketId,
+                socketData: payload.socketData
             }
             break;
         default:
@@ -26,12 +23,8 @@ export function handleRealtimeSocket(state = initalState, { type, payload }) {
 export function handleRealtimeDatRelay(state = dataRelayInitialState, { type, payload }) {
     switch (type) {
         case 'UPDATE_RT_DATA_RELAY':
-            return state = [...state, {
-                sensorId: payload.sensorId,
-                photosensor: payload.photosensor,
-                ultrasonic: payload.ultrasonic,
-                time: new Date().toLocaleString()
-            }]
+            var data = { sensorId: payload.sensorId, photosensor: payload.photosensor, ultrasonic: payload.ultrasonic, time: new Date().toLocaleString() }
+            return [data]
             break;
         default:
             return state;
