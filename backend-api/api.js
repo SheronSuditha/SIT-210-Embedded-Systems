@@ -30,6 +30,7 @@ mongoose.connect(process.env.DB_URL, {
 
 const connectRoute = require('./routes/connect/connect')
 const publicRoute_sensorData = require('./routes/public/sensors');
+const SensorData = require('./models/SensorData');
 
 
 app.use('/api/connect', connectRoute)
@@ -53,6 +54,23 @@ socket.on('disconnect', () => {
 
 socket.on('reconnect', () => {
     socket.emit("server:init")
+})
+
+socket.on('server:get:ifchanged', async ({ sensor_id, data_result }) => {
+    console.log("got evenr")
+    const sensor = await SensorData.findOne({ bay_id: sensor_id });
+    if (sensor.status === data_result.ultrasonic) {
+        console.log("Same")
+        const allLocations = await SensorData.find({});
+        socket.emit('server:data:relay', ({ data: allLocations }))
+    } else {
+        console.log("updating")
+        const sensor = await SensorData.findOne({ bay_id: sensor_id });
+        sensor.status = data_result.ultrasonic;
+        sensor.save();
+        const allsensorsAfterUpdate = await SensorData.find({});
+        socket.emit('server:data:relay', { data: allsensorsAfterUpdate })
+    }
 })
 
 
