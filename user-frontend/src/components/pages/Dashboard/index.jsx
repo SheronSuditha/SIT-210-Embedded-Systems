@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Layout, Menu, Switch, Card, Space, PageHeader, Form, Input, List, Avatar } from 'antd';
 import { useHistory, useRouter } from 'react-router';
+import { enableRealtimeSocket } from '../../../redux/actions/actions-realtime';
 import './dash.css';
+import { useDispatch, useSelector } from 'react-redux';
 import { io } from 'socket.io-client';
 const { Header, Content, Footer } = Layout;
+
 function DashboardPage() {
 	const [ form ] = Form.useForm();
 	const [ formLayout, setFormLayout ] = useState('verticle');
@@ -12,8 +15,19 @@ function DashboardPage() {
 	const [ socketId, setSocketId ] = useState(null);
 	const history = useHistory();
 	const [ rtfRelay, setRtfRelay ] = useState([]);
-
+	const dispatch = useDispatch();
+	const socketStatusRedux = useSelector((state) => state.realtime);
 	let socket;
+
+	useEffect(() => {
+		if (socketStatusRedux.isEnabled === true) {
+			setSwitchDisabled(true);
+			setSocketStatus(true);
+			setSocketId(socketStatusRedux.socketId);
+			handleSocketConnection();
+		}
+		return () => {};
+	}, []);
 
 	async function handleSocketConnection() {
 		setSocketStatus(true);
@@ -25,6 +39,13 @@ function DashboardPage() {
 				socket.on('client:ack', () => {
 					console.log(socket.id);
 					setSocketId(socket.id);
+					dispatch(
+						enableRealtimeSocket({
+							isEnabled: true,
+							socketId: socket.id,
+							socketData: socket
+						})
+					);
 					handleSocketFunctions();
 				});
 			} else {
@@ -34,7 +55,7 @@ function DashboardPage() {
 
 	const handleSocketFunctions = () => {
 		socket.on('client:data:relay', (data) => {
-			console.log(data);
+			//console.log(data);
 			const { id, ultrasonic_state, photosensor_state } = data;
 			addToState(id, ultrasonic_state, photosensor_state);
 		});
@@ -44,7 +65,7 @@ function DashboardPage() {
 		var dateTime = new Date().toLocaleString();
 		var data = { id, ultra, photo, date: dateTime };
 		setRtfRelay((rtfRelay) => [ data, ...rtfRelay ]);
-		console.log(data, rtfRelay);
+		//console.log(data, rtfRelay);
 	}
 
 	return (
@@ -98,7 +119,11 @@ function DashboardPage() {
 								<div style={{ padding: '10px' }}>
 									<Card title="Subscribe to realtime feed" style={{ width: 300 }}>
 										Turn On / Off: <Space />{' '}
-										<Switch onClick={handleSocketConnection} disabled={switchDisabled} />
+										<Switch
+											onClick={handleSocketConnection}
+											disabled={switchDisabled}
+											checked={switchDisabled}
+										/>
 										<h1>Status: {socketStatus === false ? <h1>OFF</h1> : <h1>ACTIVE</h1>}</h1>
 										<p>
 											Socket ID: <Space />{' '}
