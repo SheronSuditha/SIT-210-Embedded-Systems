@@ -32,6 +32,7 @@ let sensors = new Array();
 let clients = new Array();
 let mainApiEndpoint = new Array();
 
+
 io.on('connection', (socket) => {
     console.log(`New Socket with id: ${socket.id}`)
     socket.on('sensor:init', (data) => {
@@ -56,7 +57,12 @@ io.on('connection', (socket) => {
     })
 
     socket.on('sensor:res:data', ({ sensor_id, data_result }) => {
+        io.to('sever').emit('sever:get:ifchagned', { sensor_id, data_result })
         io.to('client').emit('client:data:relay', { id: sensor_id, ultrasonic_state: data_result.ultrasonic, photosensor_state: data_result.photosensor })
+    })
+
+    socket.on('server:data:relay', (data) => {
+        io.to('client').emit('client:data:updatemap:relay', { data })
     })
 
     socket.on('disconnect', () => {
@@ -101,11 +107,25 @@ function logToConsole(message) {
 
 setInterval(() => {
     reqDataFromGroundSensors();
-}, 2000);
+}, 5000);
 
 function reqDataFromGroundSensors() {
     io.to('sensor').emit('sensor:req:data');
 }
+
+// const rand = ["Available", "Present"]
+
+
+// setInterval(() => {
+//     io.to('client').emit('client:data:relay', { id: 1101, ultrasonic_state: rand[Math.floor(Math.random() * rand.length)], photosensor_state: "Available" })
+
+//     //io.to('client').emit('client:data:updatemap:relay', { sensorid: 1019, status: rand[Math.floor(Math.random() * rand.length)] })
+
+//     const data_result = {
+//         ultrasonic: rand[Math.floor(Math.random() * rand.length)]
+//     }
+//     io.to('server').emit('server:get:ifchanged', { sensor_id: 1019, data_result })
+// }, 60000);
 
 
 app.get('/', (req, res) => {
