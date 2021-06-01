@@ -60,7 +60,7 @@ function UserMap() {
 				</Marker>
 				{groundSensors.map(
 					(gSensor) =>
-						gSensor.status === 'Occupied' ? (
+						gSensor.status === 'Present' ? (
 							<Marker key={gSensor._id} position={[ gSensor.lat, gSensor.lon ]} icon={RedIcon}>
 								<Popup>
 									<span>Bay ID: {gSensor.bay_id}</span> <br />
