@@ -12,7 +12,7 @@ if (process.env.BRANCH === "prod") {
         cert: fs.readFileSync(process.env.CERT)
     }, app);
 } else if (process.env.BRANCH === "dev") {
-    http = require('https');
+    http = require('http');
     server = http.createServer(app);
 }
 const { Server } = require("socket.io");
