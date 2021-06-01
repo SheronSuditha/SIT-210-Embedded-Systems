@@ -10,7 +10,7 @@ import 'leaflet/dist/leaflet.css';
 import icon from 'leaflet/dist/images/marker-icon.png';
 import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 import { getGroundSensors } from '../../utils/api/worker';
-
+import { useSelector } from 'react-redux';
 let DefaultIcon = L.icon({
 	iconUrl: boltSvg,
 	iconSize: [ 15, 15 ]
@@ -30,6 +30,8 @@ L.Marker.prototype.options.icon = DefaultIcon;
 
 function UserMap() {
 	const [ groundSensors, setGroundSensors ] = useState([]);
+	const socketState = useSelector((state) => state.realtime.socketData);
+	var _sensors;
 	useEffect(() => {
 		fetchSensors();
 		return () => {};
@@ -37,7 +39,26 @@ function UserMap() {
 
 	async function fetchSensors() {
 		const sensors_ = await getGroundSensors();
-		setGroundSensors(sensors_.sensors);
+		console.log('FETCHING SENSORS');
+		_sensors = await sensors_.sensors;
+		setGroundSensors(_sensors);
+	}
+
+	useEffect(
+		() => {
+			if (socketState == null) return;
+			socketState.on('client:data:updatemap:relay', (data) => {
+				handleUpdates(data);
+			});
+
+			return () => {};
+		},
+		[ socketState ]
+	);
+
+	async function handleUpdates(data) {
+		console.log(data.data.data);
+		setGroundSensors(data.data.data);
 	}
 
 	return (
