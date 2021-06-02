@@ -4,6 +4,7 @@
   "description": "",
   "main": "socket_server.js",
   "scripts": {
+    "start": "node socket_server.js",
     "dev": "nodemon socket_server.js"
   },
   "keywords": [],
