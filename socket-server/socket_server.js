@@ -1,4 +1,5 @@
 const dotenv = require('dotenv');
+const cors = require('cors');
 dotenv.config();
 var fs = require('fs')
 const express = require('express');
@@ -16,6 +17,7 @@ if (process.env.BRANCH === "prod") {
     server = http.createServer(app);
 }
 const { Server } = require("socket.io");
+app.use(cors());
 
 /*
 INFO: Socket server will act as the main reply and the entry point for sensors. 
